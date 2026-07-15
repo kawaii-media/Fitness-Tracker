@@ -33,10 +33,58 @@ export default function WeightLogTab({
   const [burnTarget, setBurnTarget] = useState(profile.calorieBurnTarget.toString());
   const [waterTarget, setWaterTarget] = useState(profile.waterTarget.toString());
   const [height, setHeight] = useState((profile.height || 170).toString());
+  const [goal, setGoal] = useState<'lose' | 'gain' | 'maintain'>('lose');
 
   const [weightError, setWeightError] = useState('');
   const [profileError, setProfileError] = useState('');
   const [successMsg, setSuccessMsg] = useState('');
+
+  // Scientific recommendations logic
+  const weightVal = profile.currentWeight || 70;
+  const heightVal = parseFloat(height) || 170;
+  const computedBmr = (10 * weightVal) + (6.25 * heightVal) - (5 * 25);
+  const computedTdee = Math.round(computedBmr * 1.375);
+
+  let recommendedCalories = 2000;
+  let recommendedWater = 2000;
+  let recommendedBurn = 300;
+
+  if (goal === 'lose') {
+    recommendedCalories = Math.max(1200, computedTdee - 400);
+    recommendedWater = Math.round((weightVal * 35 + 250) / 100) * 100;
+    recommendedBurn = 350;
+  } else if (goal === 'gain') {
+    recommendedCalories = computedTdee + 350;
+    recommendedWater = Math.round((weightVal * 35 + 500) / 100) * 100;
+    recommendedBurn = 300;
+  } else {
+    recommendedCalories = computedTdee;
+    recommendedWater = Math.round((weightVal * 35) / 100) * 100;
+    recommendedBurn = 250;
+  }
+
+  const handleApplyRecommendation = () => {
+    setCalorieTarget(recommendedCalories.toString());
+    setWaterTarget(recommendedWater.toString());
+    setBurnTarget(recommendedBurn.toString());
+    if (goal === 'lose') {
+      setTargetWeight(Math.round(weightVal - 5).toString());
+    } else if (goal === 'gain') {
+      setTargetWeight(Math.round(weightVal + 5).toString());
+    } else if (goal === 'maintain') {
+      setTargetWeight(weightVal.toString());
+    }
+  };
+
+  // Sync with prop changes (e.g. after onboarding)
+  React.useEffect(() => {
+    setUserName(profile.name);
+    setTargetWeight(profile.weightTarget.toString());
+    setCalorieTarget(profile.calorieTarget.toString());
+    setBurnTarget(profile.calorieBurnTarget.toString());
+    setWaterTarget(profile.waterTarget.toString());
+    setHeight((profile.height || 170).toString());
+  }, [profile]);
 
   const handleAddLog = (e: React.FormEvent) => {
     e.preventDefault();
@@ -154,6 +202,56 @@ export default function WeightLogTab({
                 placeholder="E.g. Budi"
                 className="w-full bg-slate-50 border border-slate-100 rounded-xl px-4 py-1.5 text-sm text-slate-800 focus:outline-hidden focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all"
               />
+            </div>
+
+            <div>
+              <label className="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1">
+                Tujuan Anda
+              </label>
+              <div className="grid grid-cols-3 gap-1 p-1 bg-slate-100 rounded-xl">
+                {(['lose', 'gain', 'maintain'] as const).map((g) => (
+                  <button
+                    key={g}
+                    type="button"
+                    onClick={() => setGoal(g)}
+                    className={`text-[10px] font-bold py-1.5 rounded-lg transition-all cursor-pointer ${
+                      goal === g
+                        ? 'bg-white text-indigo-600 shadow-xs'
+                        : 'text-slate-500 hover:text-slate-800'
+                    }`}
+                  >
+                    {g === 'lose' ? 'Turun BB' : g === 'gain' ? 'Otot' : 'Jaga Fit'}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            <div className="bg-indigo-50 border border-indigo-100 rounded-2xl p-3 space-y-2 text-xs">
+              <span className="font-bold text-indigo-800 flex items-center gap-1">
+                <Award className="w-3.5 h-3.5 text-indigo-600 animate-pulse" />
+                Rekomendasi Rencana Ilmiah:
+              </span>
+              <div className="grid grid-cols-3 gap-1 text-[10px] font-mono text-center">
+                <div className="bg-white/80 p-1 rounded-md border border-indigo-100">
+                  <div className="text-[8px] text-slate-400 font-sans">Makan</div>
+                  <div className="font-bold text-slate-700">{recommendedCalories} kcal</div>
+                </div>
+                <div className="bg-white/80 p-1 rounded-md border border-indigo-100">
+                  <div className="text-[8px] text-slate-400 font-sans">Air</div>
+                  <div className="font-bold text-slate-700">{recommendedWater} ml</div>
+                </div>
+                <div className="bg-white/80 p-1 rounded-md border border-indigo-100">
+                  <div className="text-[8px] text-slate-400 font-sans">Bakar</div>
+                  <div className="font-bold text-slate-700">{recommendedBurn} kcal</div>
+                </div>
+              </div>
+              <button
+                type="button"
+                onClick={handleApplyRecommendation}
+                className="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-1 rounded-lg text-[10px] transition-colors cursor-pointer"
+              >
+                ✨ Terapkan Rekomendasi
+              </button>
             </div>
 
             <div className="grid grid-cols-2 gap-3">

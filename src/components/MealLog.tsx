@@ -38,11 +38,43 @@ export default function MealLog({ meals, onAddMeal, onDeleteMeal }: MealLogProps
   const [error, setError] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  // Apply a preset food selection
-  const handleSelectPreset = (preset: typeof FOOD_PRESETS[0]) => {
-    setFoodName(preset.name);
-    setCalories(preset.calories.toString());
-    setMealType(preset.type as any);
+  // State to track multiple selected presets
+  const [selectedPresets, setSelectedPresets] = useState<typeof FOOD_PRESETS[0][]>([]);
+
+  // Apply or toggle a preset food selection
+  const handleTogglePreset = (preset: typeof FOOD_PRESETS[0]) => {
+    let updated: typeof FOOD_PRESETS[0][] = [];
+    const exists = selectedPresets.some(p => p.name === preset.name);
+    
+    if (exists) {
+      updated = selectedPresets.filter(p => p.name !== preset.name);
+    } else {
+      updated = [...selectedPresets, preset];
+    }
+    
+    setSelectedPresets(updated);
+
+    if (updated.length > 0) {
+      // Combine food names cleanly
+      const combinedName = updated.map(p => p.name).join(' + ');
+      setFoodName(combinedName);
+
+      // Sum calories
+      const totalCalories = updated.reduce((sum, p) => sum + p.calories, 0);
+      setCalories(totalCalories.toString());
+
+      // Set meal type to match the latest selected preset's type
+      setMealType(preset.type as any);
+    } else {
+      setFoodName('');
+      setCalories('');
+    }
+  };
+
+  const handleClearPresets = () => {
+    setSelectedPresets([]);
+    setFoodName('');
+    setCalories('');
   };
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -81,6 +113,7 @@ export default function MealLog({ meals, onAddMeal, onDeleteMeal }: MealLogProps
       // Reset input (except date)
       setFoodName('');
       setCalories('');
+      setSelectedPresets([]);
       setIsSubmitting(false);
     }, 200);
   };
@@ -210,22 +243,47 @@ export default function MealLog({ meals, onAddMeal, onDeleteMeal }: MealLogProps
 
         {/* Cepat Tambah Makanan Preset */}
         <div className="border-t border-slate-100 pt-4">
-          <div className="flex items-center gap-1.5 text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">
-            <Sparkles className="w-3.5 h-3.5 text-amber-500" />
-            Template Makanan Populer
-          </div>
-          <div className="grid grid-cols-2 gap-1.5 max-h-[140px] overflow-y-auto pr-1">
-            {FOOD_PRESETS.map((p, idx) => (
+          <div className="flex items-center justify-between mb-2">
+            <div className="flex items-center gap-1.5 text-xs font-bold text-slate-400 uppercase tracking-wider">
+              <Sparkles className="w-3.5 h-3.5 text-amber-500 animate-pulse" />
+              Template Makanan (Multi-Pilih)
+            </div>
+            {selectedPresets.length > 0 && (
               <button
-                key={idx}
                 type="button"
-                onClick={() => handleSelectPreset(p)}
-                className="text-left text-xs bg-slate-50/50 hover:bg-emerald-50 border border-slate-100 hover:border-emerald-100 p-2 rounded-lg transition-colors group flex flex-col justify-between"
+                onClick={handleClearPresets}
+                className="text-[10px] text-rose-500 hover:text-rose-700 font-bold bg-rose-50 px-2 py-0.5 rounded-md cursor-pointer transition-colors"
               >
-                <span className="font-medium text-slate-700 truncate w-full group-hover:text-emerald-800">{p.name.split(' (')[0]}</span>
-                <span className="text-[10px] text-slate-400 font-mono group-hover:text-emerald-600 font-medium">{p.calories} kcal</span>
+                Hapus Pilihan ({selectedPresets.length})
               </button>
-            ))}
+            )}
+          </div>
+          <p className="text-[10px] text-slate-400 mb-2">
+            Klik beberapa makanan untuk menggabungkan porsi dan kalori secara otomatis.
+          </p>
+          <div className="grid grid-cols-2 gap-1.5 max-h-[140px] overflow-y-auto pr-1">
+            {FOOD_PRESETS.map((p, idx) => {
+              const isActive = selectedPresets.some(sp => sp.name === p.name);
+              return (
+                <button
+                  key={idx}
+                  type="button"
+                  onClick={() => handleTogglePreset(p)}
+                  className={`text-left text-xs p-2 rounded-lg transition-all flex flex-col justify-between border cursor-pointer ${
+                    isActive
+                      ? 'bg-emerald-600 border-emerald-600 text-white shadow-xs'
+                      : 'bg-slate-50/50 hover:bg-emerald-50/50 border-slate-100 hover:border-emerald-200 text-slate-700'
+                  }`}
+                >
+                  <span className={`font-bold truncate w-full ${isActive ? 'text-white' : 'text-slate-700'}`}>
+                    {p.name.split(' (')[0]}
+                  </span>
+                  <span className={`text-[10px] font-mono font-bold ${isActive ? 'text-emerald-100' : 'text-slate-400'}`}>
+                    {p.calories} kcal
+                  </span>
+                </button>
+              );
+            })}
           </div>
         </div>
       </div>

@@ -10,6 +10,11 @@ export interface Workout {
   duration: number; // in minutes
   calories: number; // kcal
   notes?: string;
+  category?: 'strength' | 'distance' | 'static' | 'general';
+  weightKg?: number; // for strength training
+  reps?: number; // for strength training
+  sets?: number; // for strength training
+  distanceKm?: number; // for running/walking/cycling
 }
 
 export interface Meal {
@@ -39,6 +44,8 @@ export interface UserProfile {
   calorieTarget: number; // daily intake goal
   calorieBurnTarget: number; // daily burn goal
   waterTarget: number; // daily water goal in ml
+  height?: number; // height in cm
+  isOnboarded?: boolean; // flag for setup form
 }
 
 export interface TrackerData {

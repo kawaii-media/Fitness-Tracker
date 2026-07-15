@@ -14,6 +14,7 @@ import MealLog from './components/MealLog';
 import WeightLogTab from './components/WeightLog';
 import Timer from './components/Timer';
 import DataBackup from './components/DataBackup';
+import OnboardingForm from './components/OnboardingForm';
 
 // Import html compiler
 import { generateSingleFileHTML } from './components/htmlTemplate';
@@ -75,6 +76,32 @@ export default function App() {
         <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-indigo-600 mb-2"></div>
         <span>Memuat Dasbor Kesehatan...</span>
       </div>
+    );
+  }
+
+  // Guard onboarding state
+  if (!data.profile.isOnboarded) {
+    return (
+      <OnboardingForm 
+        onSubmit={(profileData) => {
+          const todayStr = getTodayDateString();
+          const initialWeightLog: WeightLog = {
+            id: 'wgt-' + Date.now(),
+            date: todayStr,
+            weight: profileData.currentWeight
+          };
+          saveState({
+            profile: {
+              ...profileData,
+              isOnboarded: true
+            },
+            workouts: [],
+            meals: [],
+            weightHistory: [initialWeightLog],
+            waterIntake: []
+          });
+        }}
+      />
     );
   }
 
@@ -324,6 +351,7 @@ export default function App() {
               workouts={data.workouts} 
               onAddWorkout={handleAddWorkout} 
               onDeleteWorkout={handleDeleteWorkout} 
+              userWeight={data.profile.currentWeight}
             />
           )}
 
