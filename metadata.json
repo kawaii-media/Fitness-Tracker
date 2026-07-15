@@ -1,0 +1,6 @@
+{
+  "name": "Fitness Tracker",
+  "description": "A client-side progressive web application to track daily workouts, calorie intake, weight progress, and manage fitness timers completely offline.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
