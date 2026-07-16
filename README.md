@@ -1,10 +1,8 @@
-# Run and deploy your own
+## Run and deploy your own
 
 This contains everything you need to run your app locally.
 
 Try this app: https://fitness.kraiteam.my.id/
-
-## Run Locally
 
 **Prerequisites:**  Node.js
 
