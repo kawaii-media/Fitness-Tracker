@@ -221,7 +221,7 @@ export default function App() {
           </div>
           <div>
             <h1 className="font-display font-bold text-lg leading-tight text-white tracking-tight">FitLife</h1>
-            <span className="text-[10px] text-indigo-400 font-semibold tracking-wider uppercase">Tracker Lokal</span>
+            <span className="text-[10px] text-indigo-400 font-semibold tracking-wider uppercase">Pelacak Kebugaran</span>
           </div>
         </div>
 
@@ -329,7 +329,7 @@ export default function App() {
               className="w-full flex items-center justify-center gap-2 bg-emerald-600 text-white px-4 py-2 rounded-xl text-xs font-semibold transition-colors"
             >
               <Download className="w-3.5 h-3.5" />
-              Unduh App Standalone (.html)
+              Unduh App
             </button>
           </div>
         </div>
