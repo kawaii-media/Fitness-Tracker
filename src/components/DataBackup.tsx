@@ -154,7 +154,7 @@ export default function DataBackup({ data, onImportData, onResetData, onExportHT
                 Aplikasi Standalone
               </h4>
               <p className="text-xs text-slate-500 leading-relaxed">
-                Fitur spesial: Unduh seluruh kode aplikasi ke dalam satu file HTML tunggal berukuran ringan. Anda dapat membukanya langsung di komputer manapun secara offline tanpa koneksi internet!
+                Unduh seluruh kode aplikasi ke dalam file tunggal berukuran ringan. Anda dapat membukanya langsung di perangkat manapun secara offline tanpa koneksi internet!
               </p>
             </div>
 
@@ -164,7 +164,7 @@ export default function DataBackup({ data, onImportData, onResetData, onExportHT
               className="w-full bg-emerald-600 hover:bg-emerald-700 active:bg-emerald-800 text-white font-semibold py-2.5 px-4 rounded-xl text-xs transition-colors flex items-center justify-center gap-2 shadow-xs"
             >
               <Download className="w-4 h-4" />
-              Unduh Aplikasi Standalone (.html)
+              Unduh Aplikasi
             </button>
           </div>
         )}
