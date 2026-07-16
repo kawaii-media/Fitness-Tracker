@@ -4,7 +4,7 @@
  */
 
 import React, { useState, useEffect } from 'react';
-import { TrackerData, Workout, Meal, WeightLog, WaterLog, UserProfile } from './types';
+import { TrackerData, Workout, Meal, WeightLog, WaterLog, UserProfile, ScheduledWorkout } from './types';
 import { getTodayDateString, generateInitialData } from './utils';
 
 // Import subcomponents
@@ -15,6 +15,7 @@ import WeightLogTab from './components/WeightLog';
 import Timer from './components/Timer';
 import DataBackup from './components/DataBackup';
 import OnboardingForm from './components/OnboardingForm';
+import WorkoutSchedule from './components/WorkoutSchedule';
 
 // Import html compiler
 import { generateSingleFileHTML } from './components/htmlTemplate';
@@ -32,14 +33,15 @@ import {
   Menu,
   X,
   FileCode,
-  Download
+  Download,
+  Calendar
 } from 'lucide-react';
 
 const LOCAL_STORAGE_KEY = 'fitness_tracker_data';
 
 export default function App() {
   const [data, setData] = useState<TrackerData | null>(null);
-  const [activeTab, setActiveTab] = useState<'dashboard' | 'workouts' | 'meals' | 'weight' | 'timer' | 'backup'>('dashboard');
+  const [activeTab, setActiveTab] = useState<'dashboard' | 'workouts' | 'schedule' | 'meals' | 'weight' | 'timer' | 'backup'>('dashboard');
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   // Load Initial State from LocalStorage
@@ -49,6 +51,9 @@ export default function App() {
       try {
         const parsed = JSON.parse(saved);
         if (parsed.profile && parsed.workouts && parsed.meals && parsed.weightHistory) {
+          if (!parsed.workoutSchedule) {
+            parsed.workoutSchedule = [];
+          }
           setData(parsed);
           return;
         }
@@ -116,6 +121,77 @@ export default function App() {
   const handleDeleteWorkout = (id: string) => {
     const updatedWorkouts = data.workouts.filter(w => w.id !== id);
     saveState({ ...data, workouts: updatedWorkouts });
+  };
+
+  // Scheduled Workouts Handlers
+  const handleAddScheduledWorkout = (workout: ScheduledWorkout) => {
+    const updatedSchedule = [...(data.workoutSchedule || []), workout];
+    saveState({ ...data, workoutSchedule: updatedSchedule });
+  };
+
+  const handleDeleteScheduledWorkout = (id: string) => {
+    const updatedSchedule = (data.workoutSchedule || []).filter(item => item.id !== id);
+    saveState({ ...data, workoutSchedule: updatedSchedule });
+  };
+
+  const handleToggleScheduledWorkout = (id: string) => {
+    const updatedSchedule = (data.workoutSchedule || []).map(item => {
+      if (item.id === id) {
+        return { ...item, isCompleted: !item.isCompleted };
+      }
+      return item;
+    });
+    saveState({ ...data, workoutSchedule: updatedSchedule });
+  };
+
+  const handleApplyRecommendedSchedule = (schedule: ScheduledWorkout[]) => {
+    saveState({ ...data, workoutSchedule: schedule });
+  };
+
+  const handleLogCompletedScheduledWorkout = (schedWorkout: ScheduledWorkout) => {
+    // Determine category based on name
+    let category: 'strength' | 'distance' | 'static' | 'general' = 'general';
+    const typeLower = schedWorkout.type.toLowerCase();
+    if (typeLower.includes('run') || typeLower.includes('cycle') || typeLower.includes('sepeda') || typeLower.includes('jogging') || typeLower.includes('jalan')) {
+      category = 'distance';
+    } else if (typeLower.includes('plank')) {
+      category = 'static';
+    } else if (typeLower.includes('push up') || typeLower.includes('pull up') || typeLower.includes('squat') || typeLower.includes('strength') || typeLower.includes('bench press') || typeLower.includes('deadlift')) {
+      category = 'strength';
+    }
+    
+    // Estimate calories burned
+    const weightEst = data.profile.currentWeight || 70;
+    let met = 5.0;
+    if (category === 'distance') met = 7.0;
+    else if (category === 'strength') met = 4.0;
+    else if (category === 'static') met = 3.0;
+    
+    const estCal = Math.round(met * 3.5 * weightEst * schedWorkout.duration / 200);
+
+    const loggedWorkout: Workout = {
+      id: 'wkt-' + Date.now(),
+      date: getTodayDateString(),
+      type: schedWorkout.type,
+      duration: schedWorkout.duration,
+      calories: estCal,
+      category,
+      notes: schedWorkout.notes || `Sesi terprogram harian dari perencana jadwal (${schedWorkout.day})`
+    };
+
+    // Toggle the scheduled workout as completed as well!
+    const updatedSchedule = (data.workoutSchedule || []).map(item => {
+      if (item.id === schedWorkout.id) {
+        return { ...item, isCompleted: true };
+      }
+      return item;
+    });
+
+    saveState({
+      ...data,
+      workouts: [...data.workouts, loggedWorkout],
+      workoutSchedule: updatedSchedule
+    });
   };
 
   // Meals CRUD
@@ -203,6 +279,7 @@ export default function App() {
   const navItems = [
     { id: 'dashboard', label: 'Dasbor', icon: LayoutDashboard, color: 'text-indigo-500' },
     { id: 'workouts', label: 'Olahraga', icon: Dumbbell, color: 'text-orange-500' },
+    { id: 'schedule', label: 'Jadwal Latihan', icon: Calendar, color: 'text-pink-500' },
     { id: 'meals', label: 'Nutrisi', icon: Utensils, color: 'text-emerald-500' },
     { id: 'weight', label: 'Berat & BMI', icon: Scale, color: 'text-blue-500' },
     { id: 'timer', label: 'Timer HIIT', icon: Clock, color: 'text-purple-500' },
@@ -221,7 +298,7 @@ export default function App() {
           </div>
           <div>
             <h1 className="font-display font-bold text-lg leading-tight text-white tracking-tight">FitLife</h1>
-            <span className="text-[10px] text-indigo-400 font-semibold tracking-wider uppercase">Pelacak Kebugaran</span>
+            <span className="text-[10px] text-indigo-400 font-semibold tracking-wider uppercase">Tracker Lokal</span>
           </div>
         </div>
 
@@ -329,7 +406,7 @@ export default function App() {
               className="w-full flex items-center justify-center gap-2 bg-emerald-600 text-white px-4 py-2 rounded-xl text-xs font-semibold transition-colors"
             >
               <Download className="w-3.5 h-3.5" />
-              Unduh App
+              Unduh App Standalone (.html)
             </button>
           </div>
         </div>
@@ -352,6 +429,18 @@ export default function App() {
               onAddWorkout={handleAddWorkout} 
               onDeleteWorkout={handleDeleteWorkout} 
               userWeight={data.profile.currentWeight}
+            />
+          )}
+
+          {activeTab === 'schedule' && (
+            <WorkoutSchedule 
+              schedule={data.workoutSchedule || []} 
+              profile={data.profile}
+              onAddScheduledWorkout={handleAddScheduledWorkout}
+              onDeleteScheduledWorkout={handleDeleteScheduledWorkout}
+              onToggleScheduledWorkout={handleToggleScheduledWorkout}
+              onLogCompletedScheduledWorkout={handleLogCompletedScheduledWorkout}
+              onApplyRecommendedSchedule={handleApplyRecommendedSchedule}
             />
           )}
 

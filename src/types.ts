@@ -46,6 +46,17 @@ export interface UserProfile {
   waterTarget: number; // daily water goal in ml
   height?: number; // height in cm
   isOnboarded?: boolean; // flag for setup form
+  goal?: 'lose' | 'gain' | 'maintain'; // overall fitness goal
+}
+
+export interface ScheduledWorkout {
+  id: string;
+  day: 'Senin' | 'Selasa' | 'Rabu' | 'Kamis' | 'Jumat' | 'Sabtu' | 'Minggu';
+  type: string; // e.g. "Push Up", "Running", "Squat"
+  duration: number; // minutes
+  notes?: string;
+  timeOfDay?: string; // e.g. "Pagi", "Sore", "Malam"
+  isCompleted?: boolean;
 }
 
 export interface TrackerData {
@@ -54,4 +65,5 @@ export interface TrackerData {
   meals: Meal[];
   weightHistory: WeightLog[];
   waterIntake: WaterLog[];
+  workoutSchedule?: ScheduledWorkout[];
 }

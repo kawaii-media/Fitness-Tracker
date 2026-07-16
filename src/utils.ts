@@ -130,11 +130,13 @@ export function generateInitialData(): TrackerData {
       calorieBurnTarget: 300,
       waterTarget: 2000,
       height: 170, // default placeholder height
-      isOnboarded: false
+      isOnboarded: false,
+      goal: 'lose'
     },
     workouts: [],
     meals: [],
     weightHistory: [],
-    waterIntake: []
+    waterIntake: [],
+    workoutSchedule: []
   };
 }

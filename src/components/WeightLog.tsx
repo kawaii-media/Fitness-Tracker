@@ -84,6 +84,9 @@ export default function WeightLogTab({
     setBurnTarget(profile.calorieBurnTarget.toString());
     setWaterTarget(profile.waterTarget.toString());
     setHeight((profile.height || 170).toString());
+    if (profile.goal) {
+      setGoal(profile.goal);
+    }
   }, [profile]);
 
   const handleAddLog = (e: React.FormEvent) => {
@@ -156,7 +159,8 @@ export default function WeightLogTab({
       calorieTarget: parsedCalorie,
       calorieBurnTarget: parsedBurn,
       waterTarget: parsedWater,
-      height: parsedHeight
+      height: parsedHeight,
+      goal: goal
     });
 
     setSuccessMsg('Profil dan target sukses diperbarui! ✨');

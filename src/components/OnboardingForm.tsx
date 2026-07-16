@@ -118,7 +118,8 @@ export default function OnboardingForm({ onSubmit }: OnboardingFormProps) {
       calorieTarget: ct,
       calorieBurnTarget: cbt,
       waterTarget: wtTarget,
-      height: h
+      height: h,
+      goal: goal
     });
   };
 
@@ -150,7 +151,7 @@ export default function OnboardingForm({ onSubmit }: OnboardingFormProps) {
             <div className="flex items-start gap-2.5">
               <Sparkles className="w-4 h-4 text-emerald-400 shrink-0 mt-0.5" />
               <p className="text-[10px] text-slate-400 font-medium leading-normal">
-                <strong>100% Privat & Lokal</strong>: Semua informasi disimpan di dalam browser Anda.
+                <strong>100% Privat & Lokal</strong>: Semua informasi disimpan di dalam penyimpanan peramban Anda.
               </p>
             </div>
           </div>
@@ -160,7 +161,7 @@ export default function OnboardingForm({ onSubmit }: OnboardingFormProps) {
         <form onSubmit={handleSubmit} className="flex-1 p-6 md:p-8 space-y-6">
           <div>
             <h1 className="text-xl font-black text-slate-900 tracking-tight leading-none uppercase">Profil Kesehatan Baru</h1>
-            <p className="text-xs font-semibold text-slate-400 uppercase tracking-widest mt-1.5">Silakan lengkapi data berikut</p>
+            <p className="text-xs font-semibold text-slate-400 uppercase tracking-widest mt-1.5">Silakan lengkapi data dasar berikut</p>
           </div>
 
           {error && (
