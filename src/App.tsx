@@ -33,7 +33,6 @@ import {
   Menu,
   X,
   FileCode,
-  Download,
   Calendar
 } from 'lucide-react';
 
@@ -328,19 +327,6 @@ export default function App() {
           })}
         </nav>
 
-        {/* Quick Exporter Button in Sidebar */}
-        <div className="my-4 pt-4 border-t border-slate-800/50">
-          <button 
-            onClick={handleExportHTML}
-            id="sidebar-btn-download-offline"
-            className="w-full flex items-center justify-center gap-2 bg-emerald-600/10 hover:bg-emerald-600 border border-emerald-500/20 hover:border-emerald-500 text-emerald-400 hover:text-white px-4 py-2.5 rounded-xl text-xs font-semibold transition-all cursor-pointer"
-            title="Download Standalone Single-File PWA HTML App"
-          >
-            <Download className="w-3.5 h-3.5" />
-            Unduh App Standalone
-          </button>
-        </div>
-
         {/* User Quick Info Footer */}
         <div className="border-t border-slate-800 pt-4 flex items-center gap-3">
           <div className="w-9 h-9 rounded-full bg-indigo-500/10 flex items-center justify-center text-indigo-400 font-bold border border-indigo-500/20 text-sm">
@@ -396,19 +382,6 @@ export default function App() {
               </button>
             );
           })}
-          <div className="pt-2 border-t border-slate-800">
-            <button 
-              onClick={() => {
-                handleExportHTML();
-                setIsMobileMenuOpen(false);
-              }}
-              id="mobile-btn-download-offline"
-              className="w-full flex items-center justify-center gap-2 bg-emerald-600 text-white px-4 py-2 rounded-xl text-xs font-semibold transition-colors"
-            >
-              <Download className="w-3.5 h-3.5" />
-              Unduh App Standalone (.html)
-            </button>
-          </div>
         </div>
       )}
 
