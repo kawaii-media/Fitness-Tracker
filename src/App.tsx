@@ -6,6 +6,7 @@
 import React, { useState, useEffect } from 'react';
 import { TrackerData, Workout, Meal, WeightLog, WaterLog, UserProfile, ScheduledWorkout } from './types';
 import { getTodayDateString, generateInitialData } from './utils';
+import { COMMON_INDONESIAN_FOODS } from './data/foodData';
 
 // Import subcomponents
 import Dashboard from './components/Dashboard';
@@ -45,6 +46,11 @@ export default function App() {
 
   // Load Initial State from LocalStorage
   useEffect(() => {
+    // Initialize Food Data if not present
+    if (!localStorage.getItem('indonesian_food_data')) {
+      localStorage.setItem('indonesian_food_data', JSON.stringify(COMMON_INDONESIAN_FOODS));
+    }
+
     const saved = localStorage.getItem(LOCAL_STORAGE_KEY);
     if (saved) {
       try {
@@ -255,25 +261,6 @@ export default function App() {
     saveState(freshSeeded);
   };
 
-  // Standalone Single-File HTML Exporter
-  const handleExportHTML = () => {
-    try {
-      const htmlString = generateSingleFileHTML(data);
-      const blob = new Blob([htmlString], { type: 'text/html;charset=utf-8' });
-      const downloadUrl = URL.createObjectURL(blob);
-      
-      const downloadAnchor = document.createElement('a');
-      downloadAnchor.setAttribute("href", downloadUrl);
-      downloadAnchor.setAttribute("download", "fitlife_tracker_pwa.html");
-      document.body.appendChild(downloadAnchor);
-      downloadAnchor.click();
-      downloadAnchor.remove();
-      URL.revokeObjectURL(downloadUrl);
-    } catch (e) {
-      console.error("Gagal mengunduh file HTML standalone.", e);
-    }
-  };
-
   // Navigation config
   const navItems = [
     { id: 'dashboard', label: 'Dasbor', icon: LayoutDashboard, color: 'text-indigo-500' },
@@ -282,7 +269,7 @@ export default function App() {
     { id: 'meals', label: 'Nutrisi', icon: Utensils, color: 'text-emerald-500' },
     { id: 'weight', label: 'Berat & BMI', icon: Scale, color: 'text-blue-500' },
     { id: 'timer', label: 'Timer HIIT', icon: Clock, color: 'text-purple-500' },
-    { id: 'backup', label: 'Backup & Backup', icon: Database, color: 'text-slate-500' },
+    { id: 'backup', label: 'Backup & Restore', icon: Database, color: 'text-slate-500' },
   ] as const;
 
   return (
@@ -297,7 +284,7 @@ export default function App() {
           </div>
           <div>
             <h1 className="font-display font-bold text-lg leading-tight text-white tracking-tight">FitLife</h1>
-            <span className="text-[10px] text-indigo-400 font-semibold tracking-wider uppercase">Tracker Lokal</span>
+            <span className="text-[10px] text-indigo-400 font-semibold tracking-wider uppercase">Fitness Tracker</span>
           </div>
         </div>
 
@@ -444,7 +431,6 @@ export default function App() {
               data={data} 
               onImportData={handleImportData} 
               onResetData={handleResetData}
-              onExportHTML={handleExportHTML}
             />
           )}
         </div>

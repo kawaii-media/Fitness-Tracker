@@ -151,7 +151,7 @@ export default function OnboardingForm({ onSubmit }: OnboardingFormProps) {
             <div className="flex items-start gap-2.5">
               <Sparkles className="w-4 h-4 text-emerald-400 shrink-0 mt-0.5" />
               <p className="text-[10px] text-slate-400 font-medium leading-normal">
-                <strong>100% Privat & Lokal</strong>: Semua informasi disimpan di dalam penyimpanan peramban Anda.
+                <strong>100% Privat & Lokal</strong>: Semua informasi disimpan di dalam browser Anda.
               </p>
             </div>
           </div>

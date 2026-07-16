@@ -7,6 +7,7 @@ import React, { useState } from 'react';
 import { WeightLog, UserProfile } from '../types';
 import { getTodayDateString, formatDateIndonesian } from '../utils';
 import { Plus, Trash2, Calendar, Scale, Award, Info, AlertCircle, Edit2 } from 'lucide-react';
+import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 
 interface WeightLogProps {
   weightHistory: WeightLog[];
@@ -183,6 +184,12 @@ export default function WeightLogTab({
 
   // Sort logs by date descending
   const sortedLogs = [...weightHistory].sort((a, b) => b.date.localeCompare(a.date));
+  
+  // Data for chart (ascending)
+  const chartData = [...weightHistory].sort((a, b) => a.date.localeCompare(b.date)).map(log => ({
+    ...log,
+    date: log.date.slice(5) // Just show MM-DD
+  }));
 
   return (
     <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
@@ -376,6 +383,25 @@ export default function WeightLogTab({
               Rumus BMI: <span className="font-mono bg-slate-100 px-1 rounded text-slate-600">BB (kg) / (TB (m))²</span>.
               Pertahankan pola makan seimbang dan olahraga teratur untuk mencapai berat ideal.
             </div>
+          </div>
+        </div>
+        
+        {/* Chart */}
+        <div className="bg-white p-6 rounded-3xl border border-slate-200 shadow-xs">
+          <h4 className="text-xs font-bold text-slate-400 uppercase tracking-widest mb-6">Tren Berat Badan</h4>
+          <div className="h-48 w-full">
+            <ResponsiveContainer width="100%" height="100%">
+              <LineChart data={chartData}>
+                <CartesianGrid strokeDasharray="3 3" stroke="#f1f5f9" />
+                <XAxis dataKey="date" stroke="#94a3b8" fontSize={10} />
+                <YAxis stroke="#94a3b8" fontSize={10} domain={['auto', 'auto']} />
+                <Tooltip 
+                  contentStyle={{ borderRadius: '12px', fontSize: '12px', borderColor: '#e2e8f0' }}
+                  labelStyle={{ fontWeight: 'bold' }}
+                />
+                <Line type="monotone" dataKey="weight" stroke="#4f46e5" strokeWidth={2} dot={{ r: 3 }} activeDot={{ r: 6 }} />
+              </LineChart>
+            </ResponsiveContainer>
           </div>
         </div>
 

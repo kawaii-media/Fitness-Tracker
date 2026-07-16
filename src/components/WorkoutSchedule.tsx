@@ -50,22 +50,22 @@ export const RECOMMENDATIONS = {
     { day: 'Minggu', type: 'Istirahat / Active Stretching', duration: 0, timeOfDay: 'Pagi', notes: 'Hari pemulihan total. Fokus pada peregangan seluruh tubuh, hidrasi, dan istirahat yang berkualitas.' }
   ],
   gain: [
-    { day: 'Senin', type: 'Strength - Chest & Triceps', duration: 45, timeOfDay: 'Sore', notes: 'Bench Press, Push Up, Dumbbell Press. Fokus pada beban progresif (hypertrophy) dengan rep range 8-12.' },
-    { day: 'Selasa', type: 'Strength - Back & Biceps', duration: 45, timeOfDay: 'Sore', notes: 'Pull Up, Lat Pulldown, Bicep Curl. Istirahat 90-120 detik di antara set.' },
-    { day: 'Rabu', type: 'HIIT Cardio Singkat', duration: 20, timeOfDay: 'Sore', notes: 'Cardio singkat berintensitas tinggi untuk kebugaran jantung tanpa mengorbankan otot.' },
-    { day: 'Kamis', type: 'Strength - Legs (Squats)', duration: 45, timeOfDay: 'Sore', notes: 'Squat, Deadlift, Lunge. Latihan kaki memicu hormon pertumbuhan otot alami secara maksimal.' },
-    { day: 'Jumat', type: 'Strength - Shoulders & Core', duration: 40, timeOfDay: 'Sore', notes: 'Lateral Raise, Plank hold, Shoulder Press. Latihan otot deltoid untuk siluet tubuh lebar.' },
-    { day: 'Sabtu', type: 'Active Recovery & Stretching', duration: 20, timeOfDay: 'Pagi', notes: 'Peregangan seluruh tubuh atau jalan santai untuk melancarkan aliran asam laktat.' },
-    { day: 'Minggu', type: 'Istirahat Total (Muscle Growth)', duration: 0, timeOfDay: 'Malam', notes: 'Pemulihan esensial. Otot bertumbuh saat Anda istirahat dan tidur cukup, bukan saat latihan!' }
+    { day: 'Senin', type: 'Strength - Chest & Triceps', duration: 40, timeOfDay: 'Sore', notes: 'Dumbbell Bench Press, Push-ups, Overhead Tricep Extension (Dumbbell).' },
+    { day: 'Selasa', type: 'Strength - Back & Biceps', duration: 40, timeOfDay: 'Sore', notes: 'Dumbbell Rows, Barbell/Dumbbell Bicep Curls, Hammer Curls.' },
+    { day: 'Rabu', type: 'HIIT Cardio Singkat', duration: 20, timeOfDay: 'Sore', notes: 'Burpees, Mountain climbers, Jumping jacks.' },
+    { day: 'Kamis', type: 'Strength - Legs & Glutes', duration: 40, timeOfDay: 'Sore', notes: 'Goblet Squats (Dumbbell), Dumbbell Lunges, Romanian Deadlifts (Dumbbell/Barbell).' },
+    { day: 'Jumat', type: 'Strength - Shoulders & Core', duration: 40, timeOfDay: 'Sore', notes: 'Dumbbell Shoulder Press, Lateral Raises, Plank, Leg Raises.' },
+    { day: 'Sabtu', type: 'Active Recovery & Stretching', duration: 20, timeOfDay: 'Pagi', notes: 'Peregangan seluruh tubuh.' },
+    { day: 'Minggu', type: 'Istirahat Total (Muscle Growth)', duration: 0, timeOfDay: 'Malam', notes: 'Pemulihan.' }
   ],
   maintain: [
-    { day: 'Senin', type: 'Running / Jogging', duration: 30, timeOfDay: 'Pagi', notes: 'Kebugaran kardiovaskular dasar. Lari dengan kecepatan percakapan (aerobik).' },
-    { day: 'Selasa', type: 'Full Body Bodyweight', duration: 30, timeOfDay: 'Sore', notes: 'Kombinasi Push Up, Pull Up, Squat, Plank. Menjaga kekuatan fungsional otot tubuh.' },
-    { day: 'Rabu', type: 'Istirahat / Peregangan', duration: 15, timeOfDay: 'Pagi', notes: 'Fokus pada fleksibilitas, mobilitas sendi, dan pencegahan kekakuan otot.' },
-    { day: 'Kamis', type: 'Sepeda / Berenang', duration: 35, timeOfDay: 'Sore', notes: 'Cardio beban rendah untuk ketahanan fisik harian.' },
-    { day: 'Jumat', type: 'HIIT & Core Workout', duration: 25, timeOfDay: 'Sore', notes: 'Latihan cepat pembakar kalori dan penguatan otot perut.' },
-    { day: 'Sabtu', type: 'Olahraga Rekreasi / Walk', duration: 45, timeOfDay: 'Pagi', notes: 'Jalan pagi, bulu tangkis, tenis, atau olahraga menyenangkan bersama teman.' },
-    { day: 'Minggu', type: 'Istirahat Total', duration: 0, timeOfDay: 'Pagi', notes: 'Pemulihan fisik dan mental siap menghadapi minggu berikutnya.' }
+    { day: 'Senin', type: 'Running / Jogging', duration: 30, timeOfDay: 'Pagi', notes: 'Kebugaran kardiovaskular dasar.' },
+    { day: 'Selasa', type: 'Full Body (Dumbbell)', duration: 30, timeOfDay: 'Sore', notes: 'Dumbbell Squats, Push-ups, Dumbbell Overhead Press, Plank.' },
+    { day: 'Rabu', type: 'Istirahat / Peregangan', duration: 15, timeOfDay: 'Pagi', notes: 'Fleksibilitas.' },
+    { day: 'Kamis', type: 'Sepeda / Berenang', duration: 35, timeOfDay: 'Sore', notes: 'Cardio.' },
+    { day: 'Jumat', type: 'HIIT & Core Workout', duration: 25, timeOfDay: 'Sore', notes: 'Burpees, Mountain climbers, Plank.' },
+    { day: 'Sabtu', type: 'Olahraga Rekreasi / Walk', duration: 45, timeOfDay: 'Pagi', notes: 'Jalan pagi.' },
+    { day: 'Minggu', type: 'Istirahat Total', duration: 0, timeOfDay: 'Pagi', notes: 'Pemulihan.' }
   ]
 };
 
@@ -181,20 +181,20 @@ export default function WorkoutSchedule({
             </p>
           </div>
           
-          <div className="flex gap-3 bg-slate-950/40 p-4 rounded-2xl border border-slate-800 shrink-0">
-            <div className="text-center px-4">
-              <div className="text-[10px] text-slate-400 font-bold uppercase">Latihan Terjadwal</div>
-              <div className="text-xl font-mono font-black text-pink-400">{schedule.length}</div>
+          <div className="flex flex-wrap items-center justify-center gap-3 bg-slate-950/40 p-3 rounded-2xl border border-slate-800">
+            <div className="text-center px-3">
+              <div className="text-[9px] text-slate-400 font-bold uppercase">Latihan</div>
+              <div className="text-lg font-mono font-black text-pink-400">{schedule.length}</div>
             </div>
-            <div className="w-px bg-slate-800" />
-            <div className="text-center px-4">
-              <div className="text-[10px] text-slate-400 font-bold uppercase">Menit Terencana</div>
-              <div className="text-xl font-mono font-black text-indigo-400">{totalMinutes}m</div>
+            <div className="w-px h-8 bg-slate-800" />
+            <div className="text-center px-3">
+              <div className="text-[9px] text-slate-400 font-bold uppercase">Menit</div>
+              <div className="text-lg font-mono font-black text-indigo-400">{totalMinutes}m</div>
             </div>
-            <div className="w-px bg-slate-800" />
-            <div className="text-center px-4">
-              <div className="text-[10px] text-slate-400 font-bold uppercase">Terselesaikan</div>
-              <div className="text-xl font-mono font-black text-emerald-400">{completedCount} / {schedule.length}</div>
+            <div className="w-px h-8 bg-slate-800" />
+            <div className="text-center px-3">
+              <div className="text-[9px] text-slate-400 font-bold uppercase">Selesai</div>
+              <div className="text-lg font-mono font-black text-emerald-400">{completedCount} / {schedule.length}</div>
             </div>
           </div>
         </div>
@@ -462,7 +462,7 @@ export default function WorkoutSchedule({
                   <div className={`absolute top-0 bottom-0 left-0 w-1.5 ${item.isCompleted ? 'bg-emerald-500' : 'bg-indigo-500'}`} />
                   
                   {/* Card Left Details */}
-                  <div className="flex items-start gap-3.5 pl-2">
+                  <div className="flex items-start gap-3.5 pl-2 min-w-0 flex-1">
                     <button
                       type="button"
                       onClick={() => onToggleScheduledWorkout(item.id)}
@@ -476,30 +476,30 @@ export default function WorkoutSchedule({
                       )}
                     </button>
                     
-                    <div className="space-y-1.5">
+                    <div className="space-y-1.5 min-w-0">
                       <div className="flex flex-wrap items-center gap-1.5">
-                        <span className="bg-slate-900 text-white text-[9px] font-black uppercase tracking-wider px-2 py-0.5 rounded-md">
+                        <span className="bg-slate-900 text-white text-[9px] font-black uppercase tracking-wider px-2 py-0.5 rounded-md shrink-0">
                           {item.day}
                         </span>
                         {item.timeOfDay && (
-                          <span className="bg-slate-100 text-slate-500 text-[9px] font-bold px-2 py-0.5 rounded-md flex items-center gap-0.5">
+                          <span className="bg-slate-100 text-slate-500 text-[9px] font-bold px-2 py-0.5 rounded-md flex items-center gap-0.5 shrink-0">
                             <Clock className="w-2.5 h-2.5" />
                             {item.timeOfDay}
                           </span>
                         )}
                         {item.duration > 0 && (
-                          <span className="bg-indigo-50 text-indigo-700 text-[9px] font-mono font-bold px-2 py-0.5 rounded-md">
+                          <span className="bg-indigo-50 text-indigo-700 text-[9px] font-mono font-bold px-2 py-0.5 rounded-md shrink-0">
                             {item.duration} Menit
                           </span>
                         )}
                       </div>
 
-                      <h4 className={`font-bold text-sm text-slate-800 ${item.isCompleted ? 'line-through text-slate-400' : ''}`}>
+                      <h4 className={`font-bold text-sm text-slate-800 break-words ${item.isCompleted ? 'line-through text-slate-400' : ''}`}>
                         {item.type}
                       </h4>
 
                       {item.notes && (
-                        <p className="text-slate-500 text-[11px] leading-relaxed max-w-xl">
+                        <p className="text-slate-500 text-[11px] leading-relaxed break-words">
                           {item.notes}
                         </p>
                       )}

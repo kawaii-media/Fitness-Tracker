@@ -11,10 +11,9 @@ interface DataBackupProps {
   data: TrackerData;
   onImportData: (data: TrackerData) => void;
   onResetData: () => void;
-  onExportHTML?: () => void;
 }
 
-export default function DataBackup({ data, onImportData, onResetData, onExportHTML }: DataBackupProps) {
+export default function DataBackup({ data, onImportData, onResetData }: DataBackupProps) {
   const fileInputRef = useRef<HTMLInputElement>(null);
   
   const [successMsg, setSuccessMsg] = useState('');
@@ -100,7 +99,7 @@ export default function DataBackup({ data, onImportData, onResetData, onExportHT
       <div className="bg-white p-6 rounded-3xl border border-slate-200 shadow-xs animate-fade-in">
         <h3 className="text-lg font-black tracking-tight text-slate-900">Pencadangan & Pengaturan Data Lokal</h3>
         <p className="text-sm text-slate-500 mt-1">
-          Semua data Anda disimpan 100% secara lokal di browser perangkat Anda menggunakan <strong>LocalStorage</strong>. Untuk menjaga keamanan data Anda dari pembersihan cache browser otomatis, lakukan pencadangan data secara berkala.
+          Semua data Anda disimpan 100% secara lokal di <strong>browser</strong> Anda. Untuk menjaga keamanan data Anda dari pembersihan cache browser, lakukan pencadangan data secara berkala.
         </p>
       </div>
 
@@ -124,7 +123,7 @@ export default function DataBackup({ data, onImportData, onResetData, onExportHT
               className="flex-1 bg-indigo-600 hover:bg-indigo-700 active:bg-indigo-800 text-white font-semibold py-2.5 px-4 rounded-xl text-xs transition-colors flex items-center justify-center gap-2 shadow-xs"
             >
               <Download className="w-4 h-4" />
-              Unduh Backup JSON
+              Cadangkan
             </button>
 
             <button
@@ -133,7 +132,7 @@ export default function DataBackup({ data, onImportData, onResetData, onExportHT
               className="flex-1 bg-slate-100 hover:bg-slate-200 active:bg-slate-300 text-slate-700 font-semibold py-2.5 px-4 rounded-xl text-xs transition-colors flex items-center justify-center gap-2"
             >
               <Upload className="w-4 h-4" />
-              Unggah Backup JSON
+              Pulihkan
             </button>
             <input 
               type="file" 
@@ -144,30 +143,6 @@ export default function DataBackup({ data, onImportData, onResetData, onExportHT
             />
           </div>
         </div>
-
-        {/* Box Ekspor Offline HTML */}
-        {onExportHTML && (
-          <div className="bg-white p-6 rounded-3xl border border-slate-200 shadow-xs space-y-4 flex flex-col justify-between animate-fade-in">
-            <div className="space-y-2">
-              <h4 className="text-sm font-bold text-slate-400 uppercase tracking-widest flex items-center gap-2">
-                <Download className="w-5 h-5 text-emerald-500" />
-                Aplikasi Standalone
-              </h4>
-              <p className="text-xs text-slate-500 leading-relaxed">
-                Fitur spesial: Unduh seluruh kode aplikasi ke dalam satu file HTML tunggal berukuran ringan. Anda dapat membukanya langsung di komputer manapun secara offline tanpa koneksi internet!
-              </p>
-            </div>
-
-            <button
-              onClick={onExportHTML}
-              id="btn-export-html"
-              className="w-full bg-emerald-600 hover:bg-emerald-700 active:bg-emerald-800 text-white font-semibold py-2.5 px-4 rounded-xl text-xs transition-colors flex items-center justify-center gap-2 shadow-xs"
-            >
-              <Download className="w-4 h-4" />
-              Unduh Aplikasi Standalone (.html)
-            </button>
-          </div>
-        )}
       </div>
 
       {/* Messages Feedbacks */}

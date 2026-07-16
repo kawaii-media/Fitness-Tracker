@@ -3,10 +3,11 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Meal } from '../types';
 import { getTodayDateString, formatDateIndonesian } from '../utils';
 import { Plus, Trash2, Calendar, Utensils, AlertCircle, Sparkles } from 'lucide-react';
+import { COMMON_INDONESIAN_FOODS } from '../data/foodData';
 
 interface MealLogProps {
   meals: Meal[];
@@ -14,77 +15,33 @@ interface MealLogProps {
   onDeleteMeal: (id: string) => void;
 }
 
-const FOOD_PRESETS = [
-  { name: 'Nasi Putih (1 piring)', calories: 200, type: 'lunch' },
-  { name: 'Telur Rebus (1 butir)', calories: 75, type: 'breakfast' },
-  { name: 'Dada Ayam Panggang', calories: 165, type: 'lunch' },
-  { name: 'Bubur Ayam Komplit', calories: 370, type: 'breakfast' },
-  { name: 'Nasi Padang + Ayam Bakar', calories: 750, type: 'lunch' },
-  { name: 'Gado-Gado Rendah Kalori', calories: 320, type: 'lunch' },
-  { name: 'Sate Ayam Tanpa Kulit (5 tusuk)', calories: 220, type: 'dinner' },
-  { name: 'Pisang Cavandish (1 buah)', calories: 95, type: 'snack' },
-  { name: 'Apel Merah (1 buah)', calories: 80, type: 'snack' },
-  { name: 'Whey Protein Shake', calories: 140, type: 'snack' },
-  { name: 'Roti Gandum (2 lembar)', calories: 150, type: 'breakfast' },
-  { name: 'Alpukat Mentega (1 buah)', calories: 160, type: 'snack' }
-];
-
 export default function MealLog({ meals, onAddMeal, onDeleteMeal }: MealLogProps) {
   const [mealType, setMealType] = useState<'breakfast' | 'lunch' | 'dinner' | 'snack'>('breakfast');
   const [foodName, setFoodName] = useState('');
+  const [suggestions, setSuggestions] = useState<any[]>([]);
+  const [showSuggestions, setShowSuggestions] = useState(false);
   const [calories, setCalories] = useState('');
   const [date, setDate] = useState(getTodayDateString());
+  const [presets, setPresets] = useState<any[]>([]);
   
   const [error, setError] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
 
+  useEffect(() => {
+    const saved = localStorage.getItem('indonesian_food_data');
+    if (saved) {
+      setPresets(JSON.parse(saved));
+    } else {
+      setPresets(COMMON_INDONESIAN_FOODS);
+    }
+  }, []);
+
   // State to track multiple selected presets
-  const [selectedPresets, setSelectedPresets] = useState<typeof FOOD_PRESETS[0][]>([]);
-
-  // AI states
-  const [isAiLoading, setIsAiLoading] = useState(false);
-  const [aiResult, setAiResult] = useState<any>(null);
-  const [aiError, setAiError] = useState('');
-
-  const handleCalculateCaloriesWithAi = async () => {
-    if (!foodName.trim()) {
-      setAiError('Masukkan nama makanan terlebih dahulu untuk dianalisis AI!');
-      return;
-    }
-    setIsAiLoading(true);
-    setAiError('');
-    setAiResult(null);
-
-    try {
-      const res = await fetch('/api/nutrition/calculate-calories', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ query: foodName }),
-      });
-
-      if (!res.ok) {
-        throw new Error('Gagal memproses perhitungan kalori oleh Gemini.');
-      }
-
-      const resultData = await res.json();
-      if (resultData && typeof resultData.totalCalories === 'number') {
-        setCalories(resultData.totalCalories.toString());
-        setAiResult(resultData);
-      } else {
-        throw new Error('Hasil analisis AI tidak valid.');
-      }
-    } catch (err: any) {
-      setAiError(err.message || 'Terjadi kesalahan saat memproses data makanan.');
-    } finally {
-      setIsAiLoading(false);
-    }
-  };
+  const [selectedPresets, setSelectedPresets] = useState<any[]>([]);
 
   // Apply or toggle a preset food selection
-  const handleTogglePreset = (preset: typeof FOOD_PRESETS[0]) => {
-    let updated: typeof FOOD_PRESETS[0][] = [];
+  const handleTogglePreset = (preset: any) => {
+    let updated: any[] = [];
     const exists = selectedPresets.some(p => p.name === preset.name);
     
     if (exists) {
@@ -99,13 +56,15 @@ export default function MealLog({ meals, onAddMeal, onDeleteMeal }: MealLogProps
       // Combine food names cleanly
       const combinedName = updated.map(p => p.name).join(' + ');
       setFoodName(combinedName);
+      setSuggestions([]);
+      setShowSuggestions(false);
 
       // Sum calories
       const totalCalories = updated.reduce((sum, p) => sum + p.calories, 0);
       setCalories(totalCalories.toString());
 
-      // Set meal type to match the latest selected preset's type
-      setMealType(preset.type as any);
+      // Set meal type to match the latest selected preset's type (fallback to snack)
+      setMealType('lunch');
     } else {
       setFoodName('');
       setCalories('');
@@ -155,8 +114,6 @@ export default function MealLog({ meals, onAddMeal, onDeleteMeal }: MealLogProps
       setFoodName('');
       setCalories('');
       setSelectedPresets([]);
-      setAiResult(null);
-      setAiError('');
       setIsSubmitting(false);
     }, 200);
   };
@@ -227,26 +184,47 @@ export default function MealLog({ meals, onAddMeal, onDeleteMeal }: MealLogProps
               <label className="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1">
                 Nama Makanan
               </label>
-              <div className="space-y-2">
+              <div className="space-y-2 relative">
                 <input
                   type="text"
                   value={foodName}
                   onChange={(e) => {
-                    setFoodName(e.target.value);
-                    if (aiResult) setAiResult(null);
+                    const value = e.target.value;
+                    setFoodName(value);
+                    if (value.length > 1) {
+                      const filtered = presets.filter(p => 
+                        p.name.toLowerCase().includes(value.toLowerCase())
+                      );
+                      setSuggestions(filtered);
+                      setShowSuggestions(true);
+                    } else {
+                      setSuggestions([]);
+                      setShowSuggestions(false);
+                    }
                   }}
                   placeholder="E.g. Nasi putih dan tempe goreng"
                   className="w-full bg-slate-50 border border-slate-100 rounded-xl px-4 py-2 text-sm text-slate-800 placeholder:text-slate-400 focus:outline-hidden focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all"
                 />
-                <button
-                  type="button"
-                  onClick={handleCalculateCaloriesWithAi}
-                  disabled={isAiLoading || !foodName.trim()}
-                  className="w-full bg-emerald-50 hover:bg-emerald-100 disabled:opacity-50 text-emerald-700 font-bold py-2 px-3 rounded-xl text-xs transition-colors flex items-center justify-center gap-1.5 border border-emerald-200/50 cursor-pointer"
-                >
-                  <Sparkles className={`w-3.5 h-3.5 text-emerald-600 ${isAiLoading ? 'animate-spin' : ''}`} />
-                  {isAiLoading ? 'Menganalisis dengan Gemini AI...' : '✨ Hitung Kalori dengan Gemini AI'}
-                </button>
+                
+                {showSuggestions && suggestions.length > 0 && (
+                  <div className="absolute z-10 w-full bg-white border border-slate-200 rounded-xl shadow-lg mt-1 max-h-40 overflow-y-auto">
+                    {suggestions.map((s, i) => (
+                      <button
+                        key={i}
+                        type="button"
+                        onClick={() => {
+                          setFoodName(s.name);
+                          setCalories(s.calories.toString());
+                          setSuggestions([]);
+                          setShowSuggestions(false);
+                        }}
+                        className="w-full text-left px-4 py-2 text-xs text-slate-700 hover:bg-emerald-50"
+                      >
+                        {s.name} - {s.calories} kcal
+                      </button>
+                    ))}
+                  </div>
+                )}
               </div>
             </div>
 
@@ -279,50 +257,16 @@ export default function MealLog({ meals, onAddMeal, onDeleteMeal }: MealLogProps
               </div>
             </div>
 
-            {aiResult && (
-              <div className="bg-emerald-50/50 border border-emerald-100 p-4 rounded-2xl space-y-2.5 animate-fade-in text-xs">
-                <div className="flex items-center gap-1.5 text-emerald-800 font-bold">
-                  <Sparkles className="w-3.5 h-3.5 text-emerald-600" />
-                  <span>Hasil Analisis Gemini AI</span>
-                </div>
-                
-                <div className="space-y-1 bg-white p-2.5 rounded-xl border border-emerald-100/50 text-slate-700">
-                  {aiResult.breakdown && aiResult.breakdown.map((item: any, i: number) => (
-                    <div key={i} className="flex justify-between items-center text-[11px] py-0.5 border-b border-slate-50 last:border-0">
-                      <div>
-                        <span className="font-bold text-slate-800">{item.foodItem}</span>
-                        <span className="text-slate-400 text-[10px] ml-1">({item.estimatedPortion})</span>
-                      </div>
-                      <span className="font-mono font-bold text-emerald-600">{item.calories} kcal</span>
-                    </div>
-                  ))}
-                  <div className="flex justify-between items-center text-xs font-bold text-slate-800 pt-1.5 mt-1 border-t border-emerald-100/30">
-                    <span>Total Estimasi:</span>
-                    <span className="font-mono text-emerald-700 bg-emerald-100/40 px-2 py-0.5 rounded-md">{aiResult.totalCalories} kcal</span>
-                  </div>
-                </div>
-
-                {aiResult.analysis && (
-                  <p className="text-[10px] text-slate-500 leading-relaxed italic">
-                    "{aiResult.analysis}"
-                  </p>
-                )}
-              </div>
-            )}
-
-            {aiError && (
-              <div className="flex items-center gap-2 text-rose-500 text-xs bg-rose-50 p-3 rounded-xl border border-rose-100">
-                <AlertCircle className="w-4 h-4 shrink-0" />
-                <span>{aiError}</span>
-              </div>
-            )}
-
             {error && (
               <div className="flex items-center gap-2 text-rose-500 text-xs bg-rose-50 p-3 rounded-xl border border-rose-100">
                 <AlertCircle className="w-4 h-4 shrink-0" />
                 <span>{error}</span>
               </div>
             )}
+            
+            <p className="text-[10px] text-slate-400 text-center mt-4">
+              *Informasi kalori adalah estimasi berdasarkan data nutrisi umum, bukan sebagai pengganti saran medis.
+            </p>
 
             <button
               type="submit"
@@ -357,7 +301,7 @@ export default function MealLog({ meals, onAddMeal, onDeleteMeal }: MealLogProps
             Klik beberapa makanan untuk menggabungkan porsi dan kalori secara otomatis.
           </p>
           <div className="grid grid-cols-2 gap-1.5 max-h-[140px] overflow-y-auto pr-1">
-            {FOOD_PRESETS.map((p, idx) => {
+            {presets.map((p, idx) => {
               const isActive = selectedPresets.some(sp => sp.name === p.name);
               return (
                 <button
